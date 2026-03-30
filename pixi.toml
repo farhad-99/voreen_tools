@@ -46,20 +46,7 @@ vtk-to-nifti = "python visualization_scripts/vtk_to_niftii.py"
 # Step 1: extract source archive
 # Re-extracts automatically when the tarball changes (SHA-based marker); skips if already up-to-date.
 [tasks.extract-voreen-src]
-cmd = """
-TARBALL=binaries/voreen-src-unix-nightly.tar.gz
-MARKER=binaries/.voreen-src-sha
-NEW_SHA=$(sha256sum "$TARBALL" | cut -d' ' -f1)
-OLD_SHA=$(cat "$MARKER" 2>/dev/null || echo "none")
-if [ "$NEW_SHA" != "$OLD_SHA" ] || [ ! -d binaries/voreen-src-unix-nightly ]; then
-  echo "Extracting Voreen source..."
-  rm -rf binaries/voreen-src-unix-nightly
-  tar -xzf "$TARBALL" -C binaries/
-  echo "$NEW_SHA" > "$MARKER"
-else
-  echo "Voreen source already up-to-date, skipping extraction."
-fi
-"""
+cmd = "bash scripts/extract-voreen-src.sh"
 
 # Step 2: configure with CMake (all required module flags pre-set)
 [tasks.configure-voreen]
