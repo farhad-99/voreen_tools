@@ -33,8 +33,9 @@ def find_voreen_binary(voreen_path=None):
     # Check locations relative to this script
     script_dir = Path(__file__).parent
     candidates += [
+        script_dir / "binaries" / "voreen-build" / "bin",
         script_dir / "binaries" / "voreen-src-unix-nightly" / "bin",
-        script_dir / "voreen-src-unix-nightly" / "bin",
+        script_dir / "voreen-build" / "bin",
         script_dir / "bin",
     ]
 
@@ -263,9 +264,13 @@ def main():
     if voreen_path is None:
         parser.error(
             "Could not find the voreentool binary.\n"
-            "  • Extract the Voreen archive:  "
-            "tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/\n"
-            "  • Then set VOREEN_BIN or use --voreen-path."
+            "  voreentool must be compiled from source:\n"
+            "  1. tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/\n"
+            "  2. mkdir -p binaries/voreen-build && cd binaries/voreen-build\n"
+            "  3. ccmake ../voreen-src-unix-nightly  (enable VRN_BUILD_VOREENTOOL)\n"
+            "  4. make -j$(nproc)\n"
+            "  Then set VOREEN_BIN=binaries/voreen-build/bin or use --voreen-path.\n"
+            "  See binaries/README.md for full build instructions."
         )
 
     # ---- locate workspace file -------------------------------------------

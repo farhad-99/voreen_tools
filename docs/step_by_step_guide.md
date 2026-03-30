@@ -59,27 +59,51 @@ scipy, nibabel, scikit-image, vedo, vtk, matplotlib).  All subsequent
 
 ---
 
-## Step 4 – Set up the Voreen binary
+## Step 4 – Build the Voreen binary
 
-The Voreen binary is distributed as a compressed archive in the `binaries/`
-directory.
+`voreentool` (the Voreen command-line tool) must be **compiled from source**.
+The source code is provided in `binaries/voreen-src-unix-nightly.tar.gz`.
 
-### 4a – Extract the archive
+### 4a – Extract the source archive
 
 ```bash
 tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/
 ```
 
-### 4b – Make it executable
+This creates `binaries/voreen-src-unix-nightly/` containing the Voreen source.
 
-```bash
-chmod +x binaries/voreen-src-unix-nightly/bin/voreentool
-```
+### 4b – Build Voreen
+
+See [`binaries/README.md`](../binaries/README.md) for full platform-specific
+instructions.  In brief:
+
+1. Install system dependencies:
+   ```bash
+   sudo apt install g++ git cmake libboost-all-dev libglew-dev qt5-default \
+       libqt5svg5-dev libdevil-dev ffmpeg libswscale-dev libavcodec-dev \
+       libavformat-dev
+   ```
+
+2. Create an out-of-tree build directory and configure:
+   ```bash
+   mkdir -p binaries/voreen-build
+   cd binaries/voreen-build
+   ccmake ../voreen-src-unix-nightly
+   ```
+   Enable at least `VRN_MODULE_VESSELNETWORKANALYS` and `VRN_BUILD_VOREENTOOL`
+   plus all other modules listed in `binaries/README.md`.
+
+3. Compile:
+   ```bash
+   make -j$(nproc)
+   ```
+
+The compiled binary will be at `binaries/voreen-build/bin/voreentool`.
 
 ### 4c – Export the binary path
 
 ```bash
-export VOREEN_BIN="$(pwd)/binaries/voreen-src-unix-nightly/bin"
+export VOREEN_BIN="$(pwd)/binaries/voreen-build/bin"
 ```
 
 > **Tip:** Add this `export` line to your `~/.bashrc` or `~/.zshrc` so it
@@ -239,21 +263,21 @@ vessel to be kept in the graph.
 ## Troubleshooting
 
 **`Could not find the voreentool binary`**
-- Check that you extracted the archive with `tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/`.
-- Verify the binary exists: `ls binaries/voreen-src-unix-nightly/bin/voreentool`.
+- `voreentool` must be **compiled from source** – see [Step 4](#step-4--build-the-voreen-binary).
+- After building, verify the binary exists: `ls binaries/voreen-build/bin/voreentool`.
 - Set `VOREEN_BIN` or pass `--voreen-path`.
 
 **`Input must be a NIFTI file`**
 - Only `.nii` and `.nii.gz` files are supported.
 
 **`nodes.csv was not created`**
-- Ensure the Voreen binary is executable: `chmod +x binaries/voreen-src-unix-nightly/bin/voreentool`.
+- Ensure the Voreen binary is executable: `chmod +x binaries/voreen-build/bin/voreentool`.
 - Run with `-v` to see the exact voreentool command being executed.
 - Confirm the input is a valid binary (or near-binary) segmentation volume.
 
 **Building Voreen from source**
-If the pre-built binary does not work on your system, you can compile Voreen
-from the provided source archive (`binaries/voreen-src-unix-nightly.tar.gz`).
+`voreentool` is not distributed as a pre-built binary — it must be compiled
+from `binaries/voreen-src-unix-nightly.tar.gz`.
 See `binaries/README.md` for platform-specific build instructions and required
 CMake flags.
 
