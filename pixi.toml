@@ -43,9 +43,23 @@ to-vtk = "python visualization_scripts/voreen_graph_radius_to_vtk.py"
 vtk-to-nifti = "python visualization_scripts/vtk_to_niftii.py"
 
 # ── Build voreentool from source (no sudo required) ──────────────────────────
-# Step 1: extract source archive (skipped if already extracted)
+# Step 1: extract source archive
+# Re-extracts automatically when the tarball changes (SHA-based marker); skips if already up-to-date.
 [tasks.extract-voreen-src]
-cmd = "test -d binaries/voreen-src-unix-nightly || tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/"
+cmd = """
+TARBALL=binaries/voreen-src-unix-nightly.tar.gz
+MARKER=binaries/.voreen-src-sha
+NEW_SHA=$(sha256sum "$TARBALL" | cut -d' ' -f1)
+OLD_SHA=$(cat "$MARKER" 2>/dev/null || echo "none")
+if [ "$NEW_SHA" != "$OLD_SHA" ] || [ ! -d binaries/voreen-src-unix-nightly ]; then
+  echo "Extracting Voreen source..."
+  rm -rf binaries/voreen-src-unix-nightly
+  tar -xzf "$TARBALL" -C binaries/
+  echo "$NEW_SHA" > "$MARKER"
+else
+  echo "Voreen source already up-to-date, skipping extraction."
+fi
+"""
 
 # Step 2: configure with CMake (all required module flags pre-set)
 [tasks.configure-voreen]

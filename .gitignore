@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.pyo
 .pixi/
+binaries/voreen-src-unix-nightly/
+binaries/voreen-build/
+binaries/.voreen-src-sha
