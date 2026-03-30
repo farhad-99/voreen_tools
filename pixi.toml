@@ -15,6 +15,16 @@ nibabel = ">=3.2"
 scikit-image = ">=0.18"
 vtk = ">=9.0"
 vedo = ">=2023.4"
+# C++ build toolchain for compiling voreentool from source (no sudo required)
+cxx-compiler = "*"
+cmake = ">=3.15"
+make = "*"
+boost-cpp = ">=1.71"
+glew = "*"
+qt-main = ">=5.12,<6"
+devil = "*"
+ffmpeg = ">=4.0"
+hdf5 = "*"
 
 [tasks]
 # Extract vessel graph – minimal required arguments:
@@ -32,3 +42,61 @@ to-vtk = "python visualization_scripts/voreen_graph_radius_to_vtk.py"
 # Convert a VTK tube file to NIFTI (open in ITK-Snap)
 #   pixi run vtk-to-nifti -i output/graph.vtk
 vtk-to-nifti = "python visualization_scripts/vtk_to_niftii.py"
+
+# ── Build voreentool from source (no sudo required) ──────────────────────────
+# Step 1: extract source archive (skipped if already extracted)
+[tasks.extract-voreen-src]
+cmd = "test -d binaries/voreen-src-unix-nightly || tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/"
+
+# Step 2: configure with CMake (all required module flags pre-set)
+[tasks.configure-voreen]
+cmd = """cmake -S binaries/voreen-src-unix-nightly -B binaries/voreen-build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+  -DPython3_EXECUTABLE="$CONDA_PREFIX/bin/python" \
+  -DVRN_BUILD_VOREENTOOL=ON \
+  -DVRN_BUILD_VOREENVE=OFF \
+  -DVRN_MODULE_BASE=ON \
+  -DVRN_MODULE_BIGDATAIMAGEPROCESS=ON \
+  -DVRN_MODULE_CONNEXE=ON \
+  -DVRN_MODULE_DEPRECATED=OFF \
+  -DVRN_MODULE_DEVIL=ON \
+  -DVRN_MODULE_ENSEMBLEANALYSIS=ON \
+  -DVRN_MODULE_EXPERIMENTAL=OFF \
+  -DVRN_MODULE_FFMPEG=OFF \
+  -DVRN_MODULE_FLOWANALYSIS=ON \
+  -DVRN_MODULE_GDCM=OFF \
+  -DVRN_MODULE_HDF5=ON \
+  -DVRN_MODULE_ITK=OFF \
+  -DVRN_MODULE_ITK_GENERATED=OFF \
+  -DVRN_MODULE_OPENCL=OFF \
+  -DVRN_MODULE_OPENMP=OFF \
+  -DVRN_MODULE_PLOTTING=ON \
+  -DVRN_MODULE_POI=OFF \
+  -DVRN_MODULE_PVM=ON \
+  -DVRN_MODULE_PYTHON=ON \
+  -DVRN_MODULE_RANDOMWALKER=ON \
+  -DVRN_MODULE_SAMPLE=OFF \
+  -DVRN_MODULE_SEGY=ON \
+  -DVRN_MODULE_STAGING=ON \
+  -DVRN_MODULE_STEREOSCOPY=ON \
+  -DVRN_MODULE_SURFACE=ON \
+  -DVRN_MODULE_TIFF=OFF \
+  -DVRN_MODULE_ULTRAMICROSCOPYDEPL=OFF \
+  -DVRN_MODULE_VESSELNETWORKANALYS=ON \
+  -DVRN_MODULE_VOLUMELABELING=OFF \
+  -DVRN_MODULE_VTK=ON \
+  -DVRN_MODULE_ZIP=ON \
+  -DVRN_NON_INTERACTIVE=OFF \
+  -DVRN_OPENGL_COMPATIBILITY_PROFI=OFF \
+  -DVRN_PRECOMPILED_HEADER=OFF \
+  -DVRN_USE_GENERIC_FILE_WATCHER=OFF \
+  -DVRN_USE_HDF5_VERSION=1.10 \
+  -DVRN_USE_SSE41=ON \
+  -DVRN_VESSELNETWORKANALYSIS_BUIL=OFF"""
+depends-on = ["extract-voreen-src"]
+
+# Step 3: compile
+[tasks.build-voreen]
+cmd = "cmake --build binaries/voreen-build --parallel"
+depends-on = ["configure-voreen"]

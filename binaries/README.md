@@ -4,7 +4,22 @@ For build instructions for Linux/MacOS/Windows please refer to:
 
 https://www.uni-muenster.de/Voreen/documentation/build_instructions.html
 
-#### Install dependecies
+#### Recommended: build with pixi (no sudo required)
+
+All C++ build dependencies are declared in `pixi.toml` and installed by pixi
+from [conda-forge](https://conda-forge.org) without requiring root access.
+From the repository root, simply run:
+
+```bash
+pixi install          # installs all dependencies including build tools
+pixi run build-voreen # extracts source, configures, and compiles
+```
+
+The binary will be at `binaries/voreen-build/bin/voreentool`.
+
+#### Manual build: install system dependencies
+
+If you prefer to manage dependencies yourself:
 
 <sub> 
 sudo apt install g++ git cmake libboost-all-dev libglew-dev qt5-default libqt5svg5-dev  libdevil-dev ffmpeg libswscale-dev libavcodec-dev libavformat-dev

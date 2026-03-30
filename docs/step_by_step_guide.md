@@ -64,41 +64,35 @@ scipy, nibabel, scikit-image, vedo, vtk, matplotlib).  All subsequent
 `voreentool` (the Voreen command-line tool) must be **compiled from source**.
 The source code is provided in `binaries/voreen-src-unix-nightly.tar.gz`.
 
-### 4a – Extract the source archive
+All required C++ build dependencies (compiler, CMake, Boost, GLEW, Qt 5,
+DevIL, FFmpeg, HDF5, VTK) are declared in `pixi.toml` and are installed
+automatically by pixi — **no `sudo` or system package manager access is needed**.
+
+### 4a – Install all dependencies (including build tools)
+
+If you have not already run `pixi install` in Step 3, do so now:
 
 ```bash
-tar -xzf binaries/voreen-src-unix-nightly.tar.gz -C binaries/
+pixi install
 ```
 
-This creates `binaries/voreen-src-unix-nightly/` containing the Voreen source.
+### 4b – Build Voreen with a single command
 
-### 4b – Build Voreen
+```bash
+pixi run build-voreen
+```
 
-See [`binaries/README.md`](../binaries/README.md) for full platform-specific
-instructions.  In brief:
+This runs three steps automatically:
 
-1. Install system dependencies:
-   ```bash
-   sudo apt install g++ git cmake libboost-all-dev libglew-dev qt5-default \
-       libqt5svg5-dev libdevil-dev ffmpeg libswscale-dev libavcodec-dev \
-       libavformat-dev
-   ```
-
-2. Create an out-of-tree build directory and configure:
-   ```bash
-   mkdir -p binaries/voreen-build
-   cd binaries/voreen-build
-   ccmake ../voreen-src-unix-nightly
-   ```
-   Enable at least `VRN_MODULE_VESSELNETWORKANALYS` and `VRN_BUILD_VOREENTOOL`
-   plus all other modules listed in `binaries/README.md`.
-
-3. Compile:
-   ```bash
-   make -j$(nproc)
-   ```
+1. Extracts `binaries/voreen-src-unix-nightly.tar.gz` (skipped if already done).
+2. Configures the build with CMake, with all required module flags pre-set and
+   all libraries resolved from the pixi environment (`$CONDA_PREFIX`).
+3. Compiles with `cmake --build --parallel` using all available CPU cores.
 
 The compiled binary will be at `binaries/voreen-build/bin/voreentool`.
+
+> **Note:** The first build takes several minutes.  Re-running
+> `pixi run build-voreen` after code changes only recompiles changed files.
 
 ### 4c – Export the binary path
 
@@ -278,8 +272,9 @@ vessel to be kept in the graph.
 **Building Voreen from source**
 `voreentool` is not distributed as a pre-built binary — it must be compiled
 from `binaries/voreen-src-unix-nightly.tar.gz`.
-See `binaries/README.md` for platform-specific build instructions and required
-CMake flags.
+The recommended way (no `sudo` needed) is `pixi run build-voreen` — see
+[Step 4](#step-4--build-the-voreen-binary).
+For manual build instructions see `binaries/README.md`.
 
 ---
 
