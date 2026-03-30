@@ -22,7 +22,6 @@ make = "*"
 boost-cpp = ">=1.71"
 glew = "*"
 qt-main = ">=5.12,<6"
-devil = "*"
 ffmpeg = ">=4.0"
 hdf5 = "*"
 
@@ -60,7 +59,7 @@ cmd = """cmake -S binaries/voreen-src-unix-nightly -B binaries/voreen-build \
   -DVRN_MODULE_BIGDATAIMAGEPROCESS=ON \
   -DVRN_MODULE_CONNEXE=ON \
   -DVRN_MODULE_DEPRECATED=OFF \
-  -DVRN_MODULE_DEVIL=ON \
+  -DVRN_MODULE_DEVIL=OFF \
   -DVRN_MODULE_ENSEMBLEANALYSIS=ON \
   -DVRN_MODULE_EXPERIMENTAL=OFF \
   -DVRN_MODULE_FFMPEG=OFF \

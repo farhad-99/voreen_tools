@@ -65,8 +65,12 @@ scipy, nibabel, scikit-image, vedo, vtk, matplotlib).  All subsequent
 The source code is provided in `binaries/voreen-src-unix-nightly.tar.gz`.
 
 All required C++ build dependencies (compiler, CMake, Boost, GLEW, Qt 5,
-DevIL, FFmpeg, HDF5, VTK) are declared in `pixi.toml` and are installed
+FFmpeg, HDF5, VTK) are declared in `pixi.toml` and are installed
 automatically by pixi — **no `sudo` or system package manager access is needed**.
+
+> **Note:** DevIL (Developer's Image Library) is not available on conda-forge
+> and is therefore not included.  `VRN_MODULE_DEVIL` is disabled in the build
+> configuration — this has no effect on NIFTI vessel-graph extraction.
 
 ### 4a – Install all dependencies (including build tools)
 

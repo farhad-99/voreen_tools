@@ -22,7 +22,7 @@ The binary will be at `binaries/voreen-build/bin/voreentool`.
 If you prefer to manage dependencies yourself:
 
 <sub> 
-sudo apt install g++ git cmake libboost-all-dev libglew-dev qt5-default libqt5svg5-dev  libdevil-dev ffmpeg libswscale-dev libavcodec-dev libavformat-dev
+sudo apt install g++ git cmake libboost-all-dev libglew-dev qt5-default libqt5svg5-dev ffmpeg libswscale-dev libavcodec-dev libavformat-dev
 </sub> 
 
 #### Voreen Build Configuration
@@ -34,7 +34,7 @@ VRN_MODULE_BASE                  ON     <br />
 VRN_MODULE_BIGDATAIMAGEPROCESS   ON     <br />                                      
 VRN_MODULE_CONNEXE               ON     <br />                                      
 VRN_MODULE_DEPRECATED            OFF    <br />                                      
-VRN_MODULE_DEVIL                 ON     <br />                                      
+VRN_MODULE_DEVIL                 OFF    <br />                                      
 VRN_MODULE_ENSEMBLEANALYSIS      ON     <br />                                      
 VRN_MODULE_EXPERIMENTAL          OFF    <br />                                      
 VRN_MODULE_FFMPEG                OFF    <br />                                  
