@@ -45,19 +45,12 @@ This creates a conda environment with Python, NumPy, pandas, matplotlib, and all
 
 ### Step 4 – Obtain the `voreentool` binary
 
-You have two options:
+> **Note:** `binaries/VoreenVE-nightly.tar.gz` contains only the **GUI AppImage**
+> (`VoreenVE/VoreenVE-x86_64.AppImage`). It does **not** include the headless
+> `voreentool` CLI binary. To run the pipeline from the command line you must
+> build `voreentool` from source (Option A below).
 
-#### Option A – Use the pre-built AppImage (quickest)
-
-```bash
-cd binaries
-tar -xzf VoreenVE-nightly.tar.gz
-cd ..
-# The headless binary is at: binaries/VoreenVE-nightly/bin/voreentool
-VOREEN_BIN="$(pwd)/binaries/VoreenVE-nightly/bin"
-```
-
-#### Option B – Build from source
+#### Option A – Build from source (required for headless CLI use)
 
 ```bash
 pixi run build-voreen
@@ -67,6 +60,18 @@ VOREEN_BIN="$(pwd)/voreen-src-unix-nightly/build/bin"
 
 > The build script (`scripts/build_voreen.sh`) applies the exact CMake flags documented in `binaries/README.md`
 > and uses the Pixi-managed compilers and libraries automatically.
+
+#### Option B – Extract the AppImage (GUI only)
+
+The AppImage launches the interactive Voreen GUI and is **not** used by
+`parse_voreen.py`. Extract it if you want to explore workspaces visually:
+
+```bash
+cd binaries
+tar -xzf VoreenVE-nightly.tar.gz
+# Extracted to: binaries/VoreenVE/VoreenVE-x86_64.AppImage
+./VoreenVE/VoreenVE-x86_64.AppImage
+```
 
 ### Step 5 – Create working directories
 
