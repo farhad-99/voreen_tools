@@ -1,48 +1,55 @@
 import argparse
 import os
+import re
 import datetime
 import pathlib
 from shutil import copyfile
 
-parser = argparse.ArgumentParser(description='Control script for running coreen on a headless machine.')
-parser.add_argument('-i','--input_image', help='Specify input file path of a NIFTI image.', required=True)
+parser = argparse.ArgumentParser(description='Control script for running Voreen on a headless machine.')
+parser.add_argument('-i','--input_image', help='Specify input file path of a NIFTI image (.nii or .nii.gz).', required=True)
 parser.add_argument('-b','--bulge_size',help='Specify bulge size',required=True)
-parser.add_argument('-vp','--voreen_tool_path',help="Specify the path where voreentool is located.",default='/home/juli/tum/git_repositories/voreen/voreen-src-unix-nightly/bin/')
-parser.add_argument('-wp','--workspace_file',default='/home/juli/tum/git_repositories/voreen/feature-vesselgraphextraction_customized_command_line.vws')
+parser.add_argument('-vp','--voreen_tool_path',help="Specify the path where voreentool is located.",default='voreen-src-unix-nightly/bin/')
+parser.add_argument('-wp','--workspace_file',default='feature-vesselgraphextraction_customized_command_line.vws')
 # voreen settings
 # --workdir /home/voreen-work/ --tempdir /home/voreen-temp/ --cachedir /home/voreen-cache/
 
-parser.add_argument('-wd','--workdir', help='Specify the working directory.', required=True)
+parser.add_argument('-wd','--workdir', help='Specify the working directory for Voreen output files.', required=True)
 parser.add_argument('-td','--tempdir', help='Specify the temporary data directory.', required=True)
 parser.add_argument('-cd','--cachedir', help='Specify the cache directory.', required=True)
-
-# TO DO
-# bulge size as cmd parameter
+parser.add_argument('-o','--output_dir', help='Specify the directory for nodes.csv and edges.csv output. Defaults to --workdir.', default=None)
 
 # read the arguments
 args = vars(parser.parse_args())
 
-input_image_path = args['input_image']
+input_image_path = os.path.abspath(args['input_image'])
 bulge_size = float(args['bulge_size'])
 
 workdir = args['workdir']
 tempdir = args['tempdir']
 cachedir = args['cachedir']
+output_dir = args['output_dir'] if args['output_dir'] else workdir
 
 voreen_tool_path = args['voreen_tool_path']
 workspace_path = args['workspace_file']
 
 volume_path = input_image_path
-bulge_size_identifier = f'{bulge_size}'
-bulge_size_identifier = bulge_size_identifier.replace('.','_')
-edge_path = f'{os.path.join(workdir,os.path.splitext(input_image_path)[0])}_b_{bulge_size_identifier}_edges.csv'
-node_path = f'{os.path.join(workdir,os.path.splitext(input_image_path)[0])}_b_{bulge_size_identifier}_nodes.csv'
-graph_path = f'{os.path.join(workdir,os.path.splitext(input_image_path)[0])}_b_{bulge_size_identifier}_graph.vvg.gz'
 
-print(f'{volume_path}')
-print(f'{edge_path}')
-print(f'{node_path}')
-print(f'{graph_path}')
+# Strip .nii.gz or .nii extension to build output filenames
+input_basename = os.path.basename(input_image_path)
+stem = re.sub(r'\.nii(\.gz)?$', '', input_basename)
+
+bulge_size_identifier = f'{bulge_size}'.replace('.','_')
+edge_path = os.path.join(output_dir, f'{stem}_b_{bulge_size_identifier}_edges.csv')
+node_path = os.path.join(output_dir, f'{stem}_b_{bulge_size_identifier}_nodes.csv')
+graph_path = os.path.join(output_dir, f'{stem}_b_{bulge_size_identifier}_graph.vvg.gz')
+
+print(f'Input volume : {volume_path}')
+print(f'Nodes output : {node_path}')
+print(f'Edges output : {edge_path}')
+print(f'Graph output : {graph_path}')
+
+# Ensure output directory exists
+pathlib.Path(output_dir).mkdir(parents=True, exist_ok=True)
 
 bulge_path = f'<Property mapKey="minBulgeSize" name="minBulgeSize" value="{bulge_size}"/>'
 

@@ -1,0 +1,50 @@
+[project]
+name = "voreen-tools"
+version = "0.1.0"
+description = "VesselGraph pipeline tools using Voreen"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+# ---------------------------------------------------------------------------
+# Python runtime and script dependencies
+# ---------------------------------------------------------------------------
+[dependencies]
+python = ">=3.8"
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+
+# ---------------------------------------------------------------------------
+# C/C++ build-time dependencies required to compile Voreen from source
+# (only needed if you build voreentool yourself; skip if using the pre-built
+#  AppImage in binaries/VoreenVE-nightly.tar.gz)
+# ---------------------------------------------------------------------------
+cmake = ">=3.16"
+make = "*"
+c-compiler = "*"
+cxx-compiler = "*"
+boost-cpp = ">=1.71"
+glew = "*"
+qt = ">=5.12,<6"
+hdf5 = ">=1.10,<1.11"
+vtk = "*"
+ffmpeg = "*"
+
+# ---------------------------------------------------------------------------
+# Convenience tasks
+# ---------------------------------------------------------------------------
+[tasks]
+
+# Run the full VesselGraph pipeline.
+# Override any argument from the command line, e.g.:
+#   pixi run pipeline -i my_seg.nii.gz -b 2.7 -wd ./output -td /tmp/vr_tmp -cd /tmp/vr_cache
+pipeline = { cmd = "python parse_voreen.py" }
+
+# Build Voreen from the bundled source tarball.
+# After running this task the voreentool binary is available at
+# voreen-src-unix-nightly/bin/voreentool.
+build-voreen = { cmd = "bash scripts/build_voreen.sh" }
+
+# Post-process the edge list produced by the pipeline.
+# Example: pixi run post-process -e output/my_seg_b_2_7_edges.csv -n output/my_seg_b_2_7_nodes.csv
+post-process = { cmd = "python post_processing/process_edge_list.py" }
